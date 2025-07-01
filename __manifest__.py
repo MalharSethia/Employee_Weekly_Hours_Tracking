@@ -1,3 +1,4 @@
+# __manifest__.py
 {
     'name': 'Employee Weekly Hours Tracking',
     'version': '1.0.0',
@@ -12,7 +13,6 @@
     'data': [
         'security/ir.model.access.csv',
         'views/hr_employee_views.xml',
-        'views/project_timesheet_views.xml',
         'views/weekly_summary_views.xml',
         'data/scheduled_actions.xml',
         'data/mail_templates.xml',
