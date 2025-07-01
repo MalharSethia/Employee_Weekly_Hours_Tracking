@@ -64,7 +64,7 @@
 
     <menuitem id="menu_weekly_summary"
               name="Weekly Hours Summary"
-              parent="hr.menu_hr_reporting"
+              parent="base.menu_administration"
               action="action_weekly_summary"
               sequence="10"/>
 </odoo>
