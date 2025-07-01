@@ -123,4 +123,45 @@ class EmployeeWeeklySummary(models.Model):
                         self._notify_manager(summary)
 
     def _notify_manager(self, summary):
-        """Send noti
+        """Send notification to manager about hour discrepancy"""
+        employee = summary.employee_id
+        manager = employee.parent_id
+        
+        if not manager:
+            _logger.warning(f"No manager found for employee {employee.name}")
+            return
+        
+        if not manager.work_email:
+            _logger.warning(f"No work email found for manager {manager.name}")
+            return
+        
+        # Prepare email template context
+        template = self.env.ref('employee_weekly_hours.mail_template_hours_discrepancy', raise_if_not_found=False)
+        if not template:
+            _logger.warning("Email template not found")
+            return
+        
+        # Send email with proper context
+        try:
+            template.with_context(
+                employee_name=employee.name,
+                manager_name=manager.name,
+                manager_email=manager.work_email,
+                logged_hours=summary.logged_hours,
+                expected_hours=summary.expected_hours,
+                discrepancy=summary.discrepancy,
+                status=summary.status,
+                week_start=summary.week_start_date.strftime('%Y-%m-%d'),
+                week_end=summary.week_end_date.strftime('%Y-%m-%d')
+            ).send_mail(summary.id, force_send=True)
+            
+            # Mark as notified
+            summary.write({
+                'manager_notified': True,
+                'notification_date': fields.Datetime.now()
+            })
+            
+            _logger.info(f"Manager notification sent for {employee.name}")
+            
+        except Exception as e:
+            _logger.error(f"Failed to send manager notification: {str(e)}")
