@@ -7,4 +7,39 @@
         <field name="email_from">${(user.email_formatted or user.company_id.email or 'noreply@localhost')|safe}</field>
         <field name="email_to">${ctx.get('manager_email', '')}</field>
         <field name="body_html" type="html">
-<div style="margin: 
+<div style="margin: 0px; padding: 0px;">
+    <p>Dear ${ctx.get('manager_name', 'Manager')},</p>
+    
+    <p>This is an automated notification regarding a hours discrepancy for one of your team members.</p>
+    
+    <table border="1" style="border-collapse: collapse; width: 100%; margin: 20px 0;">
+        <tr style="background-color: #f0f0f0;">
+            <td style="padding: 8px;"><strong>Employee</strong></td>
+            <td style="padding: 8px;">${ctx.get('employee_name', '')}</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px;"><strong>Week Period</strong></td>
+            <td style="padding: 8px;">${ctx.get('week_start', '')} to ${ctx.get('week_end', '')}</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px;"><strong>Expected Hours</strong></td>
+            <td style="padding: 8px;">${ctx.get('expected_hours', 0)} hours</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px;"><strong>Logged Hours</strong></td>
+            <td style="padding: 8px;">${ctx.get('logged_hours', 0)} hours</td>
+        </tr>
+        <tr style="background-color: #ffeeee;">
+            <td style="padding: 8px;"><strong>Discrepancy</strong></td>
+            <td style="padding: 8px;">${ctx.get('discrepancy', 0)} hours (${ctx.get('status', '').title()})</td>
+        </tr>
+    </table>
+    
+    <p>Please review this discrepancy with the employee and take appropriate action if necessary.</p>
+    
+    <p>Best regards,<br/>
+    HR System</p>
+</div>
+        </field>
+    </record>
+</odoo>
