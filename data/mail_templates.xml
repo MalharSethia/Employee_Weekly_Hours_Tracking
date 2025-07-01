@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="mail_template_hours_discrepancy" model="mail.template">
+        <field name="name">Hours Discrepancy Notification</field>
+        <field name="model_id" ref="model_employee_weekly_summary"/>
+        <field name="subject">Hours Discrepancy Alert - ${ctx.get('employee_name', 'Employee')}</field>
+        <field name="email_from">${(user.email_formatted or user.company_id.email or 'noreply@localhost')|safe}</field>
+        <field name="email_to">${ctx.get('manager_email', '')}</field>
+        <field name="body_html" type="html">
+<div style="margin: 
