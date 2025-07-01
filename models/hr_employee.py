@@ -10,8 +10,7 @@ class HrEmployee(models.Model):
     # Weekly hours tracking
     current_week_hours = fields.Float(
         string="Current Week Hours",
-        compute="_compute_weekly_hours",
-        store=False
+        compute="_compute_weekly_hours"
     )
     
     expected_weekly_hours = fields.Float(
@@ -23,7 +22,6 @@ class HrEmployee(models.Model):
     hours_discrepancy = fields.Float(
         string="Hours Discrepancy",
         compute="_compute_hours_discrepancy",
-        store=False,
         help="Difference between logged and expected hours (positive = overtime, negative = undertime)"
     )
     
@@ -32,7 +30,7 @@ class HrEmployee(models.Model):
         ('overtime', 'Overtime'),
         ('undertime', 'Undertime'),
         ('critical', 'Critical Discrepancy')
-    ], string="Weekly Status", compute="_compute_discrepancy_status", store=False)
+    ], string="Weekly Status", compute="_compute_discrepancy_status")
     
     weekly_summary_ids = fields.One2many(
         'employee.weekly.summary',
@@ -40,8 +38,8 @@ class HrEmployee(models.Model):
         string="Weekly Summaries"
     )
 
-    @api.depends('timesheet_ids.date', 'timesheet_ids.unit_amount')
     def _compute_weekly_hours(self):
+        """Compute weekly hours without @api.depends since we're searching external records"""
         for employee in self:
             # Get current week dates (Monday to Sunday)
             today = fields.Date.today()
@@ -58,12 +56,10 @@ class HrEmployee(models.Model):
             
             employee.current_week_hours = sum(timesheets.mapped('unit_amount'))
 
-    @api.depends('current_week_hours', 'expected_weekly_hours')
     def _compute_hours_discrepancy(self):
         for employee in self:
             employee.hours_discrepancy = employee.current_week_hours - employee.expected_weekly_hours
 
-    @api.depends('hours_discrepancy')
     def _compute_discrepancy_status(self):
         for employee in self:
             discrepancy = employee.hours_discrepancy
