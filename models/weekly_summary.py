@@ -62,7 +62,7 @@ class EmployeeWeeklySummary(models.Model):
         
         for employee in employees:
             # Check if summary already exists for this week
-            existing_summary = self.search([
+            existing_summary = self.sudo().search([
                 ('employee_id', '=', employee.id),
                 ('week_start_date', '=', last_monday)
             ])
@@ -81,7 +81,7 @@ class EmployeeWeeklySummary(models.Model):
             logged_hours = sum(timesheets.mapped('unit_amount'))
             
             # Create weekly summary
-            summary = self.create({
+            summary = self.sudo().create({
                 'employee_id': employee.id,
                 'week_start_date': last_monday,
                 'week_end_date': last_sunday,
@@ -105,7 +105,7 @@ class EmployeeWeeklySummary(models.Model):
                 
                 # Check if significant discrepancy and manager not yet notified this week
                 if abs(discrepancy) > 5:  # More than 5 hours discrepancy
-                    recent_notification = self.search([
+                    recent_notification = self.sudo().search([
                         ('employee_id', '=', employee.id),
                         ('week_start_date', '=', start_of_week),
                         ('manager_notified', '=', True)
@@ -113,7 +113,7 @@ class EmployeeWeeklySummary(models.Model):
                     
                     if not recent_notification:
                         # Create current week summary for notification
-                        summary = self.create({
+                        summary = self.sudo().create({
                             'employee_id': employee.id,
                             'week_start_date': start_of_week,
                             'week_end_date': start_of_week + timedelta(days=6),
